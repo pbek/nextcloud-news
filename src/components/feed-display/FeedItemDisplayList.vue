@@ -34,6 +34,9 @@
 			<button v-shortkey="['j']" class="hidden" @shortkey="jumpToNextItem">
 				Next
 			</button>
+			<button v-shortkey="['r']" class="hidden" @shortkey="reloadItems">
+				Reload
+			</button>
 		</div>
 		<div class="feed-item-display-container">
 			<VirtualScroll ref="virtualScroll"
@@ -70,6 +73,7 @@ import VirtualScroll from './VirtualScroll.vue'
 import FeedItemRow from './FeedItemRow.vue'
 
 import { FeedItem } from '../../types/FeedItem'
+import { ACTIONS } from '../../store'
 
 const DEFAULT_DISPLAY_LIST_CONFIG = {
 	starFilter: true,
@@ -277,6 +281,39 @@ export default Vue.extend({
 				const nextItem = items[currentIndex + 1]
 				this.clickItem(nextItem, false)
 			}
+		},
+		async reloadItems() {
+			// Clear feeds and folders
+			// const currentState = this.$store.state
+			// console.log("currentState", currentState)
+			// const newState = {
+			// 	...currentState,
+			// 	items: {},
+			// }
+			// this.$store.replaceState(newState)
+			//
+			// await this.$store.dispatch(ACTIONS.FETCH_ITEMS)
+
+
+			// Clear feeds and folders
+			const currentState = this.$store.state
+			console.log("currentState", currentState)
+			const newState = {
+				...currentState,
+				folders: {
+					folders: [],
+				},
+				feeds: {
+					feeds: [],
+				},
+			}
+			newState.items.allItems = []
+			this.$store.replaceState(newState)
+
+			// Fetch feeds and folders
+			await this.$store.dispatch(ACTIONS.FETCH_FOLDERS)
+			await this.$store.dispatch(ACTIONS.FETCH_FEEDS)
+			await this.$store.dispatch(ACTIONS.FETCH_ITEMS)
 		},
 	},
 })
